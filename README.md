@@ -117,7 +117,7 @@ Best used in conjunction before [CALP](https://github.com/aston89/CALP-Content-A
 
 ---
 
-# Usage parameters
+## Usage parameters
 
 ### Basic
 ``` bash
@@ -161,7 +161,7 @@ Example:
 python ASIP_DSP.py input.wav output.wav --verbose
 ```
 
-### Typical workflows
+## Typical workflows
 
 ### Mastering enhancement (subtle)
 ``` bash
@@ -179,10 +179,11 @@ python ASIP_DSP.py mix.wav fx.wav --stereo 1.8 --aggressive
 ```
 
 ---
+---
 
-# ASIP Mathematical Model (Extended Technical Note)
+## ASIP Mathematical Model (Extended Technical Note)
 
-## 1. Signal Representation
+### 1. Signal Representation
 
 Let the stereo signal be defined in the time domain as:
 
@@ -200,7 +201,7 @@ M(t,f) = (L(t,f) + R(t,f)) / 2
 Side component:
 S(t,f) = (L(t,f) - R(t,f)) / 2
 
-## 2. Core Assumption
+### 2. Core Assumption
 
 Stereo width is not a global parameter.
 
@@ -210,13 +211,13 @@ We define a scalar field:
 
 𝒪(t,f) ∈ [0,1]
 
-## 3. Construction of the Opportunity Field
+### 3. Construction of the Opportunity Field
 
 The opportunity field is defined as a multiplicative interaction of perceptual constraints:
 
 𝒪(t,f) = B(t,f) · C(t,f) · E(t,f) · T(t) · H(t,f)
 
-## 3.1 Mid Masking Term
+### 3.1 Mid Masking Term
 
 Dense mid energy reduces spatial injection capacity:
 
@@ -227,7 +228,7 @@ where:
 - μM, σM are robust statistics  
 - σ is sigmoid function  
 
-## 3.2 Inter-Channel Coherence Constraint
+### 3.2 Inter-Channel Coherence Constraint
 
 High coherence implies low safe decorrelation space:
 
@@ -235,7 +236,7 @@ C(t,f) = 1 - σ((ρ(t,f) - μρ) / σρ)
 
 where ρ is inter-channel coherence.
 
-## 3.3 Side Entropy Constraint
+### 3.3 Side Entropy Constraint
 
 Spatially rich side regions reduce augmentation capacity:
 
@@ -243,7 +244,7 @@ E(t,f) = 1 - H(S(t,f))
 
 where H is normalized spectral entropy of the side field.
 
-## 3.4 Transient Protection
+### 3.4 Transient Protection
 
 Transient regions are protected via temporal weighting:
 
@@ -251,7 +252,7 @@ T(t) = 1 - w_transient(t)
 
 where w_transient is a smooth onset envelope.
 
-## 3.5 Spectral Safety Envelope
+### 3.5 Spectral Safety Envelope
 
 Frequency-dependent constraint:
 
@@ -260,7 +261,7 @@ H(t,f) ∈ [0,1]
 - attenuates low-frequency perturbation  
 - limits extreme high-frequency widening  
 
-## 4. Additive Stereo Update Rule
+### 4. Additive Stereo Update Rule
 
 The system does not transform the original stereo image.
 
@@ -273,7 +274,7 @@ where:
 - λ is the stereo intensity parameter (--stereo)
 - R_S is a smoothed residual of the side signal
 
-## 5. Interpretation
+### 5. Interpretation
 
 Unlike classical stereo imagers:
 
@@ -285,7 +286,7 @@ Stereo enhancement emerges from:
 
 > constrained additive perturbations over a locally computed perceptual field
 
-## 6. Optimization View (Conceptual)
+### 6. Optimization View (Conceptual)
 
 The system can be interpreted as:
 
@@ -297,7 +298,7 @@ subject to:
 - transient constraints  
 - spectral safety constraints  
 
-## 7. Key Property
+### 7. Key Property
 
 The stereo field is not reconstructed.
 
