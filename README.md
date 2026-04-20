@@ -29,16 +29,11 @@ The processing pipeline can be summarized as:
 **Importantly:**
 The original Mid signal is never modified and the Side signal is not globally reshaped.
 
-
-
-
-
 ## Key Characteristics
 ASIP does not subtract or compress the stereo field. All modifications are additive in nature.
 Processing is driven by short-time spectral analysis, not global track statistics.
 No thresholds or discrete mode switching are used. All transitions are smooth and sigmoid-based.
 The amount and type of stereo enhancement depends on spectral density, inter-channel correlation, transient activity, local entropy of the Side field.
-
 
 ## Differences from Conventional Stereo Imagers
 
@@ -63,13 +58,41 @@ The amount and type of stereo enhancement depends on spectral density, inter-cha
 - mixing automation replacement
 - replacement for panning decisions
 
-## Design Philosophy
+## Technical overview (Design philosophy)
 
 The system is intentionally designed around the idea that:
 ```
 Stereo space should be introduced, not rebalanced.
 ```
-The goal is not to widen the signal but to create controlled spatial micro-variance that remains coherent with the original mix structure.
+
+ASIP is built around a strictly additive stereo enhancement model that avoids global reconstruction of the input image.
+Instead of enforcing a target stereo width or applying deterministic channel transformations, the system estimates local spatial opportunity across time-frequency space and applies only minimal, context-dependent augmentation to the side component.
+The core assumption is that stereo information is not uniformly distributed, certain spectral regions and temporal events already contain sufficient spatial separation while others can tolerate subtle enhancement without altering the perceived mix balance.
+ASIP therefore operates as a constrained perturbation system rather than a corrective imager.
+
+The processing pipeline is based on four coupled principles:
+- **Additive-only side synthesis**, no subtraction or destructive mid/side redistribution is performed on the original signal.
+- **Local opportunity mapping**, a multi-factor estimation of spatial headroom derived from spectral density, inter-channel coherence and mid/side energy distribution.
+- **Continuous psychoacoustic masking model**, weighting is governed by smooth statistical transitions (median/MAD-normalized sigmoid fields) rather than hard thresholds.
+- **Entropy-aware spatial diffusion**, stereo widening is modulated by local spectral entropy, preventing over-processing in already complex or diffuse regions.
+
+Transient regions and low-frequency content are explicitly protected using sigmoid functions (soft gating) rather than binary constraints ensuring that spatial enhancement does not interfere with punch or mono compatibility, all transformations are applied in the STFT domain and re-synthesized without global normalization, preserving the original energy profile.
+
+## Why it does not behave like traditional stereo imagers
+Most stereo imaging processors (including many “pro-grade” mastering tools) operate on a relatively shallow model: they apply fixed or semi-fixed mid/side gain manipulations, frequency-split widening or correlation-driven static corrections.
+This often results in a globally imposed stereo shape that is independent of local musical context.
+ASIP takes a fundamentally different approach, instead of treating stereo width as a parameter to be set, it treats it as an emergent property of local spectral and temporal structure, the process is driven by a continuously evaluated opportunity field rather than a direct transformation target.
+
+**Key distinctions:**
+- No global widening curve is applied. Width is not “set”, it is locally inferred.
+- No frequency band is permanently “stretched” or “opened”. Any widening exists only where the signal structure allows it.
+- Processing is strictly additive in the side domain, meaning the original stereo field is never collapsed or rebalanced to achieve an effect.
+- Correlation is not used as a correction target but as one of several weak priors in a broader perceptual model.
+- Temporal masking (transients) and spectral density are first-class constraints, not afterthoughts.
+- Entropy in the side channel is used as a proxy for “already-complete spatial information”, reducing intervention where the mix is already self-sufficient.
+- 
+In contrast, many conventional imagers implicitly assume that “wider is better” within a bounded range, leading to uniform expansion artifacts, phase exaggeration or perceived haze when pushed beyond subtle settings.
+ASIP avoids this by never attempting to reshape the stereo field globally, instead it introduces controlled micro-differences only where the signal structure suggests unused spatial capacity, the result is less a “widening effect” and more a **localized increase in spatial resolution**.
 
 ## Notes on Behavior
 Due to its additive and content-dependent nature, ASIP may exhibit:
