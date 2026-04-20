@@ -45,7 +45,7 @@ The amount and type of stereo enhancement depends on spectral density, inter-cha
 | Behavior         | Deterministic                | Content-dependent           |
 | Transitions      | Mode/threshold-based         | Continuous                  |
 
-## IUse Cases
+## Use Cases
 
 **Intended for:**
 - subtle stereo enhancement on mixed material
