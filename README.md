@@ -179,5 +179,7 @@ python ASIP_DSP.py mix.wav fx.wav --stereo 1.8 --aggressive
 ```
 
 
+B(t,f)=σ(σM​Md​(t,f)−μM​​)
+
 
 
