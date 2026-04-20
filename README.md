@@ -66,9 +66,9 @@ The amount and type of stereo enhancement depends on spectral density, inter-cha
 ## Design Philosophy
 
 The system is intentionally designed around the idea that:
-'''
+```
 Stereo space should be introduced, not rebalanced.
-'''
+```
 The goal is not to widen the signal but to create controlled spatial micro-variance that remains coherent with the original mix structure.
 
 ## Notes on Behavior
