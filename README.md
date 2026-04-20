@@ -178,8 +178,127 @@ python ASIP_DSP.py mix.wav master.wav --stereo 1.0
 python ASIP_DSP.py mix.wav fx.wav --stereo 1.8 --aggressive
 ```
 
+---
 
-B(t,f)=σ(σM​Md​(t,f)−μM​​)
+# ASIP Mathematical Model (Extended Technical Note)
 
+## 1. Signal Representation
 
+Let the stereo signal be defined in the time domain as:
 
+L(t), R(t)
+
+We operate in the Short-Time Fourier Transform (STFT) domain:
+
+L(t,f), R(t,f)
+
+From this we define:
+
+Mid component:
+M(t,f) = (L(t,f) + R(t,f)) / 2
+
+Side component:
+S(t,f) = (L(t,f) - R(t,f)) / 2
+
+## 2. Core Assumption
+
+Stereo width is not a global parameter.
+
+Instead, it is modeled as a **local capacity field** describing where small perturbations in the Side channel are perceptually admissible.
+
+We define a scalar field:
+
+𝒪(t,f) ∈ [0,1]
+
+## 3. Construction of the Opportunity Field
+
+The opportunity field is defined as a multiplicative interaction of perceptual constraints:
+
+𝒪(t,f) = B(t,f) · C(t,f) · E(t,f) · T(t) · H(t,f)
+
+## 3.1 Mid Masking Term
+
+Dense mid energy reduces spatial injection capacity:
+
+B(t,f) = σ((Md(t,f) - μM) / σM)
+
+where:
+- Md is local mid spectral density  
+- μM, σM are robust statistics  
+- σ is sigmoid function  
+
+## 3.2 Inter-Channel Coherence Constraint
+
+High coherence implies low safe decorrelation space:
+
+C(t,f) = 1 - σ((ρ(t,f) - μρ) / σρ)
+
+where ρ is inter-channel coherence.
+
+## 3.3 Side Entropy Constraint
+
+Spatially rich side regions reduce augmentation capacity:
+
+E(t,f) = 1 - H(S(t,f))
+
+where H is normalized spectral entropy of the side field.
+
+## 3.4 Transient Protection
+
+Transient regions are protected via temporal weighting:
+
+T(t) = 1 - w_transient(t)
+
+where w_transient is a smooth onset envelope.
+
+## 3.5 Spectral Safety Envelope
+
+Frequency-dependent constraint:
+
+H(t,f) ∈ [0,1]
+
+- attenuates low-frequency perturbation  
+- limits extreme high-frequency widening  
+
+## 4. Additive Stereo Update Rule
+
+The system does not transform the original stereo image.
+
+Instead, it injects a residual field:
+
+S'(t,f) = S(t,f) + λ · 𝒪(t,f) · R_S(t,f)
+
+where:
+
+- λ is the stereo intensity parameter (--stereo)
+- R_S is a smoothed residual of the side signal
+
+## 5. Interpretation
+
+Unlike classical stereo imagers:
+
+- No global widening target exists  
+- No fixed mid/side gain structure is applied  
+- No frequency band is permanently expanded  
+
+Stereo enhancement emerges from:
+
+> constrained additive perturbations over a locally computed perceptual field
+
+## 6. Optimization View (Conceptual)
+
+The system can be interpreted as:
+
+maximize   spatial_perceptual_gain(ΔS)
+
+subject to:
+- masking constraints  
+- coherence constraints  
+- transient constraints  
+- spectral safety constraints  
+
+## 7. Key Property
+
+The stereo field is not reconstructed.
+
+It is locally enriched under constraint satisfaction.
