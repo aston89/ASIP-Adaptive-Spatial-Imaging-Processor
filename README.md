@@ -6,7 +6,7 @@ The system operates in a strictly **additive-only regime**, it does not reconstr
 ---
 
 ## Core Idea
-Stereo width is not treated as a parameter, but as an **emergent property of local perceptual tolerance** in the signal.
+Stereo width is modeled as a locally constrained additive perturbation of the Side component, gated by a time-frequency opportunity field derived from perceptual and spectral features.
 ASIP models this by estimating where the stereo field has unused spatial capacity, based on:
 - spectral energy distribution  
 - inter-channel coherence  
@@ -28,17 +28,19 @@ This produces a continuous **opportunity map** over time and frequency.
    - transient activity
    - side entropy
 4. Construction of a local opportunity field  
-5. Generation of a micro-diffuse residual from the Side component  
-6. Additive integration into the stereo field  
+5. Generation of a smoothed Side residual via local spectral diffusion  
+6. Construction of a masked additive layer modulated by the opportunity field
+7. Reinjection into Mid/Side reconstruction domain
 
 **Constraint:**  
-The Mid signal remains untouched. The Side is not globally reshaped.
+The Mid signal is preserved in magnitude but participates in reconstruction.
+The Side is locally modified through both additive and weak multiplicative terms.
 
 ---
 
 ## Key Properties
 
-- **Additive-only processing**: no destructive mid/side redistribution  
+- **Additive processing**: Locally additive-dominant processing with minor multiplicative reinforcement  
 - **Local control model**: no global widening parameter  
 - **Continuous behavior**: no thresholds or mode switching  
 - **Sigmoid-based weighting**: smooth perceptual transitions  
@@ -53,7 +55,7 @@ The Mid signal remains untouched. The Side is not globally reshaped.
 | Aspect | Conventional Imagers | ASIP |
 |--------|----------------------|------|
 | Control model | Global width parameter | Local opportunity field |
-| Processing | Mid/Side gain / delays | Additive side perturbation |
+| Processing | Mid/Side gain / delays | Additive + weak multiplicative side perturbation |
 | Behavior | Deterministic | Signal-dependent |
 | Frequency handling | Band-based widening | Continuous spectral weighting |
 | Transient handling | Optional / external | Integrated constraint |
@@ -103,9 +105,8 @@ Even at `0.0`, the system remains active in a minimal additive regime rather tha
 ---
 
 ## Design Principle
-> **Stereo space is not enforced. It is inferred.**
-ASIP treats stereo imaging as a constrained perturbation problem rather than a transformation target.
-The output is a secondary spatial layer shaped by local perceptual tolerance rather than global manipulation of the stereo field.
+Stereo space is not enforced as a global transform but emerges from constrained local perturbations applied to the Side component.
+ASIP treats stereo imaging as a bounded modification problem, where enhancement is introduced through a spatially gated additive layer with minor reinforcement of existing Side structure.
 
 ---
 
@@ -267,10 +268,10 @@ The system does not transform the original stereo image.
 
 Instead, it injects a residual field:
 
-S'(t,f) = S(t,f) + λ · 𝒪(t,f) · R_S(t,f)
+S'(t,f) = S(t,f) · (1 + α) + λ · 𝒪(t,f) · R_S(t,f)
 
 where:
-
+- α is a small global Side reinforcement term dependent on stereo intensity
 - λ is the stereo intensity parameter (--stereo)
 - R_S is a smoothed residual of the side signal
 
@@ -300,6 +301,10 @@ subject to:
 
 ### 7. Key Property
 
-The stereo field is not reconstructed.
-
+The stereo field is not explicitly reconstructed from scratch but it is weakly reweighted and locally augmented through additive and minimal multiplicative interactions.
 It is locally enriched under constraint satisfaction.
+
+### 8. Perceptual stability
+
+While the model is framed as strictly additive, the implementation includes bounded multiplicative reinforcement of the Side signal for perceptual stability.
+
