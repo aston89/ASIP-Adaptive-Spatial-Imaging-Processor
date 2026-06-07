@@ -1,7 +1,7 @@
 # Adaptive Spatial Imaging Processor
 **ASIP** is a stereo enhancement system based on **local opportunity-driven additive processing**.
 Instead of applying global widening, static mid/side gains or fixed spatial transformations, ASIP computes a **time-frequency spatial opportunity field** that determines where minimal stereo perturbations can be introduced without altering the original mix structure.
-The system operates mostly into an **additive-dominant regime**, it does not reconstruct, rebalance or correct the stereo image, it introduces a secondary spatial layer derived from local signal properties.
+The system operates almost only into an **additive-only regime**, it does not reconstruct, rebalance or correct the stereo image, it introduces a secondary spatial layer derived from local signal properties.
 
 ---
 
