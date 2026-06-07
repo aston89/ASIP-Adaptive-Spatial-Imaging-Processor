@@ -306,5 +306,5 @@ It is locally enriched under constraint satisfaction.
 
 ### 8. Perceptual stability
 
-While the model is framed as strictly additive, the implementation includes bounded multiplicative reinforcement of the Side signal for perceptual stability.
+While the model is basically framed as additive-only, the implementation includes bounded multiplicative reinforcement of the Side signal for the necessary perceptual stability.
 
